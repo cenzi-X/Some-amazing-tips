@@ -1,0 +1,23 @@
+import os
+from PIL import Image
+folder_path = os.path.expanduser("~/Desktop/新建文件夹")
+
+for filename in os.listdir(folder_path):
+    if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
+        image_path = os.path.join(folder_path, filename)
+        img = Image.open(image_path)
+
+        img = img.convert("RGBA")
+        datas = img.getdata()
+        non_empty_pixels = [(x, y) for y in range(img.height) for x in range(img.width) if datas[y * img.width + x][3] != 0]
+        
+        if non_empty_pixels:
+            min_x = min(x for x, y in non_empty_pixels)
+            max_x = max(x for x, y in non_empty_pixels)
+            min_y = min(y for x, y in non_empty_pixels)
+            max_y = max(y for x, y in non_empty_pixels)
+
+            img_cropped = img.crop((min_x, min_y, max_x + 1, max_y + 1))
+            img_cropped.save(image_path.replace('.jpg', '.png').replace('.jpeg', '.png').replace('.bmp', '.png').replace('.gif', '.png'), dpi=(150, 150))
+
+print("Processing complete!")
