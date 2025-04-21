@@ -29,7 +29,7 @@ end;
 
 %save
 
-ans = normalizedA
+ans = normalizedA;
 desktopPath = fullfile(getenv('USERPROFILE'), 'Desktop');
 outputFileName = fullfile(desktopPath, 'output.xlsx');
 if istable(ans)
