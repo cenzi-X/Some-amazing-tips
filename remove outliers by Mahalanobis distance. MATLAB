@@ -1,0 +1,8 @@
+function newMatrix = removeOutliersByMahalanobisDistance(B, outlierPercentage)
+    % outlierPercentage: 需要剔除的异常列所占比例
+    covMatrix = cov(B);
+    mahalanobisDist = mahal(B', B');
+    [~, sortedIdx] = sort(mahalanobisDist, 'descend');
+    numColumnsToKeep = round((1 - outlierPercentage) * size(B, 2));
+    newMatrix = B(:, sortedIdx(1:numColumnsToKeep));
+end
