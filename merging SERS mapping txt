@@ -1,0 +1,44 @@
+folderPath = 'C:\Users\de\Desktop\新建文件夹 (2)';
+
+%merge
+files = dir(fullfile(folderPath, '*.txt')); 
+combinedMatrix = [];
+for i = 1:length(files)
+    filePath = fullfile(folderPath, files(i).name);
+    data = readtable(filePath, 'Delimiter', '\t', 'ReadVariableNames', false); 
+    if iscellstr(data{1, :}) 
+        data(1, :) = []; 
+    end
+    lastColumn = data{:, end}; 
+    reshapedMatrix = reshape(lastColumn, 1015, []); 
+    combinedMatrix = [combinedMatrix, reshapedMatrix]; 
+end;
+A = combinedMatrix;     
+
+%smooth
+A = sgolayfilt(A,2,21);           
+
+%normalize
+[rows, cols] = size(A);
+normalizedA = zeros(rows, cols);
+for col = 1:cols
+    minVal = min(A(:, col));
+    maxVal = max(A(:, col));
+    normalizedA(:, col) = (A(:, col) - minVal) / (maxVal - minVal);
+end;
+
+%save
+
+ans = normalizedA
+desktopPath = fullfile(getenv('USERPROFILE'), 'Desktop');
+outputFileName = fullfile(desktopPath, 'output.xlsx');
+if istable(ans)
+    writetable(ans, outputFileName);
+elseif isnumeric(ans) || islogical(ans)
+    writetable(array2table(ans), outputFileName);
+else
+    error('ans 变量不是表格或数值矩阵，无法输出到 Excel。');
+end;
+
+
+
